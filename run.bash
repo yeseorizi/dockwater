@@ -61,7 +61,7 @@ while getopts ":cstxhirp:" option; do
     r) # With internal graphics card (without nvidia) and with RDP. 
       # The default user in container is 'docker' due to RDP constraints (custom host port can be set via the -p option)
       # shellcheck disable=SC2116
-      ROCKER_ARGS="--devices /dev/dri $JOY --x11 --git --port "$HOST_RDP_PORT":3389 --volume "$HOME":/home/docker/HOST";;
+      ROCKER_ARGS="--devices /dev/dri $JOY --x11 --git --port "$HOST_RDP_PORT":3389 --volume "$HOME":/home/docker/HOST --device /dev/fuse --privileged";;
     s) # Build cloudsim image
       ROCKER_ARGS="--nvidia --novnc --turbovnc --user --user-override-name=developer";;
     t) # Build test image for Continuous Integration 
