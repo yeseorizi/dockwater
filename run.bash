@@ -49,6 +49,7 @@ Help()
 
 JOY=/dev/input/js0
 CUDA=""
+HOST_RDP_PORT=3389
 ROCKER_ARGS="--devices /dev/dri --devices $JOY --dev-helpers --nvidia --x11 --git --persist-image --volume $(echo ~):/docker/HOST"
 
 while getopts ":cstxhirp:" option; do
