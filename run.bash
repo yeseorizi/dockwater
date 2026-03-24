@@ -49,19 +49,18 @@ Help()
 
 JOY=/dev/input/js0
 CUDA=""
-HOST_RDP_PORT=3389
-ROCKER_ARGS="--devices /dev/dri $JOY --dev-helpers --nvidia --x11 --git --volume "$HOME":/root/HOST"
+ROCKER_ARGS="--devices /dev/dri --devices $JOY --dev-helpers --nvidia --x11 --git --persist-image --volume $(echo ~):/docker/HOST"
 
 while getopts ":cstxhirp:" option; do
   case $option in
     c) # enable cuda library support 
       CUDA="--cuda";;
     i) # With internal graphics card (without nvidia)
-      ROCKER_ARGS="--devices /dev/dri $JOY --x11 --git --volume "$HOME":/root/HOST";;
+      ROCKER_ARGS="--devices /dev/dri --devices $JOY --x11 --git --persist-image --volume "$HOME":/root/HOST";;
     r) # With internal graphics card (without nvidia) and with RDP. 
       # The default user in container is 'docker' due to RDP constraints (custom host port can be set via the -p option)
       # shellcheck disable=SC2116
-      ROCKER_ARGS="--devices /dev/dri $JOY --x11 --git --port "$HOST_RDP_PORT":3389 --volume "$HOME":/home/docker/HOST --device /dev/fuse --privileged";;
+      ROCKER_ARGS="--devices /dev/dri --devices $JOY --x11 --git --persist-image --port "$HOST_RDP_PORT":3389 --volume "$HOME":/home/docker/HOST --device /dev/fuse --privileged";;
     s) # Build cloudsim image
       ROCKER_ARGS="--nvidia --novnc --turbovnc --user --user-override-name=developer";;
     t) # Build test image for Continuous Integration 

@@ -1,7 +1,5 @@
-# Ubuntu 24.04 
-FROM osrf/ros:jazzy-desktop-full
-
-ARG ROSDIST=jazzy
+# Ubuntu 20.04 and ROS Foxy
+FROM osrf/ros:foxy-desktop-focal
 
 # Setup timezone
 ENV TZ=Etc/UTC
@@ -35,6 +33,7 @@ RUN apt update && \
         libspnav-dev \
         libusb-dev \
 	lsb-release \
+    nano \
 	net-tools \
 	pkg-config \
         protobuf-compiler \
@@ -57,16 +56,18 @@ RUN sudo apt update && sudo apt install locales \
   && sudo locale-gen en_US en_US.UTF-8 \
   && sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
-# Set up repo to install Gazebo
+ARG ROSDIST=foxy
+
+# Set up repo to install Ignition
 RUN /bin/sh -c 'wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg' \
   && /bin/sh -c 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null'
 
   # Install some 'standard' ROS packages and utilities.
 RUN apt update \
   && apt install -y --no-install-recommends \
-     gz-harmonic \
      python3-colcon-common-extensions \
      python3-vcstool \
+     python3-sdformat13 \
      ros-${ROSDIST}-ackermann-msgs \
      ros-${ROSDIST}-actuator-msgs \
      ros-${ROSDIST}-ament-cmake-pycodestyle \
@@ -74,19 +75,18 @@ RUN apt update \
      ros-${ROSDIST}-image-transport-plugins \
      ros-${ROSDIST}-joy-teleop \
      ros-${ROSDIST}-joy-linux \
-     ros-${ROSDIST}-marine-acoustic-msgs \
-     ros-${ROSDIST}-marine-sensor-msgs \
      ros-${ROSDIST}-mavros-msgs \
      ros-${ROSDIST}-navigation2 \
      ros-${ROSDIST}-nav2-bringup \
-     ros-${ROSDIST}-nav2-minimal-tb3-sim \
-     ros-${ROSDIST}-nav2-minimal-tb4-description\
-     ros-${ROSDIST}-nav2-minimal-tb4-sim \
-     ros-${ROSDIST}-plotjuggler-ros \
+     ros-${ROSDIST}-turtlebot3 \
      ros-${ROSDIST}-radar-msgs \
-     ros-${ROSDIST}-ros-gz-sim\
+     ros-${ROSDIST}-ros-gzgarden \
+     ros-${ROSDIST}-rqt-graph \
+     ros-${ROSDIST}-rqt-image-view \
+     ros-${ROSDIST}-rqt-plot \
+     ros-${ROSDIST}-rqt-topic \
+     ros-${ROSDIST}-rviz2 \
      ros-${ROSDIST}-vision-msgs \
-     ros-${ROSDIST}-xacro \    
+     ros-${ROSDIST}-xacro \
   && sudo rm -rf /var/lib/apt/lists/* \
   && sudo apt clean -qq
-
