@@ -250,7 +250,16 @@ RUN useradd -s /bin/bash -m $USER && echo "$USER:$PASS" | chpasswd; \
     echo 'export DESKTOP_SESSION=xfce' >> /home/$USER/.xsessionrc; \
     echo 'export XDG_SESSION_TYPE=x11' >> /home/$USER/.xsessionrc; \
     sed -i "s/#EnableConsole=false/EnableConsole=true/g" /etc/xrdp/xrdp.ini; \
-    sed -i 's/max_bpp=32/max_bpp=16/g' /etc/xrdp/xrdp.ini; \
+    # NOTE: do NOT force max_bpp down to 16 here (docker/lyrical.arm64v8.dockerfile does,
+    # copied from it originally, then removed here after root-causing a real black-screen
+    # bug 2026-07-20). xrdp 0.10.x has a confirmed upstream bug (neutrinolabs/xrdp#3118):
+    # when max_bpp < 32 and the client requests the GFX pipeline (every modern client does,
+    # including macOS's "Windows App"/Microsoft Remote Desktop), the server logs "Client
+    # requested gfx protocol but the server configuration is limited to 16 bpp", downgrades,
+    # then the session negotiates but never actually paints anything — solid black screen,
+    # session stays alive, Xorg/XFCE fully running server-side (confirmed via `docker exec`:
+    # xfwm4/xfce4-panel/xfdesktop all alive), just no bitmap updates ever reach the client.
+    # Fix per the upstream maintainer: leave max_bpp at its default (32).
     sed -i 's/#X11UseLocalhost yes/X11UseLocalhost no/g' /etc/ssh/sshd_config; \
     chown $USER:$USER /home/$USER/.xsessionrc
 
